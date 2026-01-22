@@ -193,13 +193,13 @@ let couleurTexte;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   textAlign(CENTER, CENTER);
-  textSize(28);
   genererPoeme();
 }
 
 function draw() {
   background(couleurFond);
-  
+  textSize(28); //taille de la police du poème
+
   // Afficher le poème avec un léger effet
   push();
   translate(width/2, height/2);
