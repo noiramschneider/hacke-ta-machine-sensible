@@ -139,9 +139,10 @@
     
     <div class="info-box">
       <strong>Comment utiliser cette page :</strong><br>
-      1. Copie le code de base ci-dessous dans <a href="https://openprocessing.org/sketch/create" target="_blank">OpenProcessing.org</a><br>
+      1. Copie le code de base ci-dessous dans <a href="https://openprocessing.org/sketch/create" target="_blank">OpenProcessing.org</a>
+      (supprime ce qui est déjà écris avant de coller)<br>
       2. Personnalise les listes de mots<br>
-      3. Utilise la boîte à outils pour personnaliser ta machine !
+      3. Utilise la boîte à outils pour personnaliser l'esthétique de ta machine !
     </div>
 
     <h2>Code de base</h2>
@@ -256,6 +257,13 @@ function windowResized() {
 
     <h2>Boîte à outils</h2>
     <p>Copie-colle ces snippets pour personnaliser ta machine poétique !</p>
+
+        <h3>Changer la taille de la police de caractères</h3>
+    <p class="snippet-description">Trouve cette ligne et modifie la valeur 30 par une autre, comme 50 par exemple. </p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-1')">Copier</button>
+      <pre><code id="snippet-1">textSize(30);</code></pre>
+    </div>
 
     <h3>Changer la police de caractères</h3>
     <p class="snippet-description">Colle dans setup(), après createCanvas()</p>
