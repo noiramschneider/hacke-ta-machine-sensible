@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hacke ta machine poétique</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Courier', serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #adadad 0%, #adadad 100%);
+      color: #1a1a2e;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+    
+    h1 {
+      color: #97FB98;
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #fcfcfc;
+      margin-bottom: 40px;
+      font-style: italic;
+    }
+    
+    h2 {
+      color: #fcfafb;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ff69b4;
+      padding-bottom: 10px;
+    }
+    
+    h3 {
+      color: #1A1A2E;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+    
+    .code-block {
+      position: relative;
+      margin: 20px 0;
+    }
+    
+    pre {
+      background: #1a1a2e;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      border-left: 4px solid #ff69b4;
+    }
+    
+    code {
+      color: #98fb98;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff69b4;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s;
+    }
+    
+    .copy-btn:hover {
+      background: #ff1493;
+      transform: scale(1.05);
+    }
+    
+    .copy-btn.copied {
+      background: #32cd32;
+    }
+    
+    .info-box {
+      background: rgba(26, 26, 46, 0.1);
+      border-left: 4px solid #FF1393;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    .snippet-description {
+      color: #fcfcfc;
+      font-size: 0.95em;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+    
+    a {
+      color: #87ceeb;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hacke ta machine poétique</h1>
+    <p class="subtitle">Atelier de programmation créative avec p5.js</p>
+    
+    <div class="info-box">
+      <strong>Comment utiliser cette page :</strong><br>
+      1. Copie le code de base ci-dessous dans <a href="https://openprocessing.org/sketch/create" target="_blank">OpenProcessing.org</a><br>
+      2. Personnalise les listes de mots<br>
+      3. Utilise la boîte à outils pour ajouter des effets !
+    </div>
+
+    <h2>Code de base</h2>
+    
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'code-base')">Copier</button>
+      <pre><code id="code-base">/* Titre : Hacke ta machine poétique
+ * Auteur : Ton nom 
+ * Année : 2026
+ * Licence : CC BY-NC-SA 4.0
+ * Vous êtes libre de partager et adapter ce code
+ * tant que c'est pour un usage non-commercial
+ * et que vous partagez sous la même licence.
+ 
+ * Description : 
+ * Customise ce générateur de poèmes aléatoire
+ * pour en faire ta machine poétique personnelle. 
+ */
+ 
+// Listes de mots 
+// Tu peux ajouter ou enlever autant de mots que tu le souhaites
+// Fais juste bien attention de respecter la forme "mot", "autre mot", ..etc
+let sujets = [
+  "La lune", "Le rêve", "L'oiseau", "Le silence", 
+  "La mer", "L'orage", "Le vent", "La nuit"
+];
+
+let verbes = [
+  "danse avec", "murmure à", "embrasse", "traverse",
+  "appelle", "découvre", "dessine", "écoute"
+];
+
+let complements = [
+  "les étoiles endormies", "un poème oublié", "l'horizon tremblant",
+  "des secrets d'argent", "la pluie électrique", "un jardin de verre",
+  "les mots du vent", "l'écho des nuages"
+];
+
+let adjectifs = [
+  "douce", "sauvage", "fragile", "infinie",
+  "silencieuse", "lumineuse", "mystérieuse", "éphémère"
+];
+
+// Variables pour le poème actuel
+let poemeActuel = "";
+let couleurFond; 
+let couleurTexte;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  textAlign(CENTER, CENTER);
+  textSize(28);
+  genererPoeme();
+}
+
+function draw() {
+  background(couleurFond);
+  
+  // Afficher le poème avec un léger effet
+  push();
+  translate(width/2, height/2);
+  
+  // Ombre du texte
+  fill(0, 0, 0, 50);
+  text(poemeActuel, 2, 2);
+  
+  // Texte principal
+  fill(couleurTexte);
+  text(poemeActuel, 0, 0);
+  pop();
+  
+  // Instructions
+  fill(255, 200);
+  textSize(16);
+  text("Cliquez pour un nouveau poème", width/2, height - 30);
+}
+
+function genererPoeme() {
+  // Choisir aléatoirement dans chaque liste
+  let sujet = random(sujets);
+  let adjectif = random(adjectifs);
+  let verbe = random(verbes);
+  let complement = random(complements);
+  
+  // Construire le poème (\n = retour à la ligne)
+  poemeActuel = sujet + " " + adjectif + "\n" + 
+                verbe + "\n" + 
+                complement;
+  
+  // Couleurs aléatoires douces
+  couleurFond = color(random(20, 60), random(20, 60), random(40, 80));
+  couleurTexte = color(random(200, 255), random(200, 255), random(220, 255)); 
+}
+
+// Générer un nouveau poème au clic
+function mousePressed() {
+  genererPoeme();
+}
+
+// Générer aussi avec la barre espace
+function keyPressed() {
+  if (key === ' ') {
+    genererPoeme();
+  }
+}
+
+// Adapter le canvas si la fenêtre change de taille
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}</code></pre>
+    </div>
+
+    <h2>Boîte à outils</h2>
+    <p>Copie-colle ces snippets pour personnaliser ta machine poétique !</p>
+
+    <h3>Changer la police de caractères</h3>
+    <p class="snippet-description">Colle dans setup(), après createCanvas()</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-1')">Copier</button>
+      <pre><code id="snippet-1">textFont('Georgia');  
+// Essaie : 'Courier New', 'Times New Roman', 'Comic Sans MS', 'Helvetica'</code></pre>
+    </div>
+
+    <h3>Faire pulser le texte (respiration)</h3>
+    <p class="snippet-description">Colle dans draw(), avant text(poemeActuel...)</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-2')">Copier</button>
+      <pre><code id="snippet-2">let taillePulsante = 28 + sin(frameCount * 0.02) * 5;
+textSize(taillePulsante);</code></pre>
+    </div>
+
+    <h3>Texte qui change de couleur en continu</h3>
+    <p class="snippet-description">Remplace fill(couleurTexte) dans draw()</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-3')">Copier</button>
+      <pre><code id="snippet-3">let r = 200 + sin(frameCount * 0.05) * 55;
+let g = 200 + cos(frameCount * 0.07) * 55;
+let b = 220 + sin(frameCount * 0.09) * 35;
+fill(r, g, b);</code></pre>
+    </div>
+
+    <h3>Texte qui suit la souris</h3>
+    <p class="snippet-description">Remplace translate(width/2, height/2) dans draw()</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-4')">Copier</button>
+      <pre><code id="snippet-4">translate(mouseX, mouseY);</code></pre>
+    </div>
+
+    <h3>Ajouter des étoiles en arrière-plan</h3>
+    <p class="snippet-description">Colle dans draw(), après background(...)</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-5')">Copier</button>
+      <pre><code id="snippet-5">for (let i = 0; i < 50; i++) {
+  fill(255, 200);
+  noStroke();
+  let x = (i * 137.5 + frameCount) % width;
+  let y = (i * 73 + frameCount * 0.5) % height;
+  circle(x, y, 2);
+}</code></pre>
+    </div>
+
+    <h3>Couleurs fixes (au lieu d'aléatoires)</h3>
+    <p class="snippet-description">Remplace les lignes couleurFond et couleurTexte dans genererPoeme()</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-7')">Copier</button>
+      <pre><code id="snippet-7">
+// Ambiance rose/mauve
+couleurFond = color(255, 200, 220);
+couleurTexte = color(80, 40, 100);
+</code></pre>
+    </div>
+
+    <h3>Sauvegarder le poème comme image</h3>
+    <p class="snippet-description">Ajoute dans keyPressed() ou crée cette fonction</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-8')">Copier</button>
+      <pre><code id="snippet-8">if (key === 's') {
+  save('mon-poeme.png');  // Appuie sur 's' pour sauvegarder
+}</code></pre>
+    </div>
+
+
+    <h3>Ajouter une image de fond</h3>
+    <p class="snippet-description">Plusieurs étapes (lis les commentaires !)</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-10')">Copier</button>
+      <pre><code id="snippet-10">// 1. Ajoute cette variable tout en haut avec les autres let
+let monImage;
+
+// 2. Dans setup(), avant genererPoeme()
+monImage = loadImage('URL_DE_TON_IMAGE');
+
+// 3. Dans draw(), REMPLACE background(couleurFond) par :
+image(monImage, 0, 0, width, height);
+tint(255, 150);  // Rend l'image un peu transparente</code></pre>
+    </div>
+
+    <h3>Texte qui bouge en cercle</h3>
+    <p class="snippet-description">Remplace translate(width/2, height/2) dans draw()</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-11')">Copier</button>
+      <pre><code id="snippet-11">let posX = width/2 + sin(frameCount * 0.02) * 200;
+let posY = height/2 + cos(frameCount * 0.02) * 200;
+translate(posX, posY);</code></pre>
+    </div>
+
+    <h3>Taille fixe au lieu de plein écran</h3>
+    <p class="snippet-description">Remplace createCanvas(windowWidth, windowHeight) dans setup()</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-12')">Copier</button>
+      <pre><code id="snippet-12">createCanvas(800, 600);  // Ou n'importe quelle taille</code></pre>
+    </div>
+
+    <div class="footer">
+      <p>Préparé avec 💖 par Marion Schneider pour l'atelier de programmation créative</p>
+      <p>Licence : <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(button, codeId) {
+      const code = document.getElementById(codeId).textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        button.textContent = 'Copié !';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = 'Copier';
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
