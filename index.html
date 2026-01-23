@@ -243,6 +243,7 @@ function mousePressed() {
 }
 
 // Générer aussi avec la barre espace
+// (ne marche pas sur ipad)
 function keyPressed() {
   if (key === ' ') {
     genererPoeme();
@@ -321,16 +322,6 @@ couleurFond = color(255, 200, 220);
 couleurTexte = color(80, 40, 100);
 </code></pre>
     </div>
-
-    <h3>Sauvegarder le poème comme image</h3>
-    <p class="snippet-description">Ajoute dans keyPressed() ou crée cette fonction</p>
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this, 'snippet-8')">Copier</button>
-      <pre><code id="snippet-8">if (key === 's') {
-  save('mon-poeme.png');  // Appuie sur 's' pour sauvegarder
-}</code></pre>
-    </div>
-
 
     <h3>Ajouter une image de fond</h3>
     <p class="snippet-description">Plusieurs étapes (lis les commentaires !)</p>
