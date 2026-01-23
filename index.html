@@ -159,14 +159,20 @@
  
  * Description : 
  * Customise ce générateur de poèmes aléatoire
- * pour en faire ta machine poétique personnelle. 
+ * pour en faire ta machine poétique personnelle.
+ * Peut-être même qu'elle pourrait te donner une
+ * idée pour une autre création ?
  */
- 
-// Listes de mots 
-// Tu peux ajouter ou enlever autant de mots que tu le souhaites
-// Fais juste bien attention de respecter la forme "mot", "autre mot", ..etc
+
+let positionMachineX; //variable qui permet de placer la machine sur l'axe des x
+let positionMachineY; //variable qui permet de placer la machine sur l'axe des x
+let lettresVisibles = 0; //variable pour faire apparaitre les lettres du poème unes à unes
+let vitesseApparition = 2; //vitesse d'apparition du poème (1 = très rapide, 10 = très lent)
+
+//Tu peux modifier la liste de mots comme tu le souhaites 
+//fais juste bien attention de respecter la forme "mot", "autre mot", etc...
 let sujets = [
-  "La lune", "Le rêve", "L'oiseau", "Le silence", 
+  "La lune", "Le rêve", "L'oiseau", "Le silence",
   "La mer", "L'orage", "Le vent", "La nuit"
 ];
 
@@ -182,77 +188,148 @@ let complements = [
 ];
 
 let adjectifs = [
-  "douce", "sauvage", "fragile", "infinie",
-  "silencieuse", "lumineuse", "mystérieuse", "éphémère"
+  "doux·ce", "sauvage", "fragile", "infini·e",
+  "silencieux·se", "lumineux·se", "mystérieux·se", "éphémère"
 ];
 
-// Variables pour le poème actuel
-let poemeActuel = "";
-let couleurFond; 
-let couleurTexte;
+let poemeActuel = ""; //variable qui va stocker le poème au complet
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  
+  createCanvas(windowWidth, windowHeight); // créer un canvas de toute la largeur de la fenêtre
+  textFont('Courier New'); //police de caractère du poème
   textAlign(CENTER, CENTER);
   genererPoeme();
+  positionMachineX = width / 2; //placer la machine au centre du canvas en x
+  positionMachineY = height / 2; //placer la machine au centre du canvas en y
+
+  // Appel de la fonction pour le dégradé rose-gris-vert
+  dessinerGradient();
 }
 
 function draw() {
-  background(couleurFond);
-  textSize(28); //taille de la police du poème
 
-  // Afficher le poème avec un léger effet
+  // Appel de la fonction qui dessine la machine
+  dessinerMachine();
+
+  // Appel de la fonction qui affiche le poème dans l'écran
+  afficherPoeme();
+
+  //circle(mouseX, mouseY, 20);
+
+}
+
+function dessinerGradient() {
+  noFill();
+  
+  //dessiner une ligne de couleur après l'autre et remplir le canva 
+  for (let y = 0; y < height; y++) {
+    let inter = map(y, 0, height, 0, 1);
+    //modifie les trois couleurs (c1, c2 et c3 ci dessous pour changer le dégradé)
+    let c1 = color(255, 0, 149); // Rose
+    let c2 = color(189, 189, 189); // Gris
+    let c3 = color(5, 207, 2); // Vert
+
+    let c;
+    if (inter < 0.5) {
+      c = lerpColor(c1, c2, inter * 2);
+    } else {
+      c = lerpColor(c2, c3, (inter - 0.5) * 2);
+    }
+
+    stroke(c);
+    line(0, y, width, y);
+  }
+}
+
+function dessinerMachine() {
   push();
-  translate(width/2, height/2);
-  
-  // Ombre du texte
-  fill(0, 0, 0, 50);
-  text(poemeActuel, 2, 2);
-  
-  // Texte principal
-  fill(couleurTexte);
-  text(poemeActuel, 0, 0);
+  translate(positionMachineX, positionMachineY); //positionne la machine au milieu de la fenêtre
+
+  // Boîtier gris clair
+  fill(180, 180, 180); //couleur du boitier de l'écran
+  stroke(150, 150, 150);
+  strokeWeight(3);
+  rectMode(CENTER);
+  rect(0, 0, 700, 500, 20); //taille et position du boitier de la machine
+
+  // Bande plus foncée en haut
+  fill(160, 160, 160); //couleur de la bande en haut de l'écran
+  noStroke();
+  rect(0, -225, 700, 50, 20, 20, 0, 0);
+
+  // Écran noir
+  fill(10, 15, 10); //ligne a changer pour changer la couleur de fond de l'écran de la machine
+  stroke(80, 80, 80); //contour du fond de l'écran
+  strokeWeight(5);
+  rect(0, 10, 620, 380, 5); //taille et position du fond de l'écran
+
   pop();
-  
+}
+
+function afficherPoeme() {
+  push();
+  translate(positionMachineX, positionMachineY + 10);
+
+  // Texte qui apparaît lettre par lettre
+  let textePartiel = poemeActuel.substring(0, lettresVisibles);
+
+  if (lettresVisibles < poemeActuel.length) {
+    if (frameCount % vitesseApparition === 0) {
+      lettresVisibles++;
+    }
+  }
+
+  // Ajouter le curseur clignotant à la fin du texte
+  if (lettresVisibles < poemeActuel.length && frameCount % 30 < 15) {
+    textePartiel += "█";
+  }
+
+  // Texte vert terminal
+  fill(0, 255, 100); //couleur du texte du poème
+  noStroke();
+  textSize(28); //taille du texte du poème
+  text(textePartiel, 0, 0);
+
   // Instructions
-  fill(255, 200);
-  textSize(16);
-  text("Cliquez pour un nouveau poème", width/2, height - 50);
+  fill(0, 200, 80, 150);
+  textSize(14);
+  text("CLIC = NOUVEAU POÈME", 0, 160);
+
+  pop();
 }
 
 function genererPoeme() {
-  // Choisir aléatoirement dans chaque liste
   let sujet = random(sujets);
   let adjectif = random(adjectifs);
   let verbe = random(verbes);
   let complement = random(complements);
-  
-  // Construire le poème (\n = retour à la ligne)
-  poemeActuel = sujet + " " + adjectif + "\n" + 
-                verbe + "\n" + 
-                complement;
-  
-  // Couleurs aléatoires douces
-  couleurFond = color(random(20, 60), random(20, 60), random(40, 80));
-  couleurTexte = color(random(200, 255), random(200, 255), random(220, 255)); 
+
+  poemeActuel = sujet + " " + adjectif + "\n" +
+    verbe + "\n" +
+    complement;
+
+  lettresVisibles = 0;
 }
 
-// Générer un nouveau poème au clic
 function mousePressed() {
   genererPoeme();
 }
 
-// Générer aussi avec la barre espace
-// (ne marche pas sur ipad)
 function keyPressed() {
   if (key === ' ') {
     genererPoeme();
+  } else if (key === 's') {
+    save('mon-poeme.png');
   }
 }
 
-// Adapter le canvas si la fenêtre change de taille
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  
+  // Mettre à jour les positions quand la fenêtre change
+  positionMachineX = width / 2;
+  positionMachineY = height / 2;
 }</code></pre>
     </div>
 
@@ -260,102 +337,100 @@ function windowResized() {
     <p>Copie-colle ces snippets pour personnaliser ta machine poétique !</p>
 
         <h3>Changer la taille de la police de caractères</h3>
-    <p class="snippet-description">Trouve cette ligne et modifie la valeur 28 par une autre, comme 50 par exemple. </p>
+    <p class="snippet-description">Trouve cette ligne dans la fonction afficherPoeme() et modifie la valeur 28 par une autre, comme 50 par exemple. </p>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this, 'snippet-0')">Copier</button>
-      <pre><code id="snippet-0">textSize(28);</code></pre>
+      <pre><code id="snippet-0">textSize(28); //taille du texte du poème</code></pre>
     </div>
 
     <h3>Changer la police de caractères</h3>
-    <p class="snippet-description">Colle dans setup(), après createCanvas()</p>
+    <p class="snippet-description">Dans setup(), remplace textFont('Courier New') par la police que tu veux</p>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this, 'snippet-1')">Copier</button>
-      <pre><code id="snippet-1">textFont('Georgia');  
-// Essaie : 'Courier New', 'Times New Roman', 'Comic Sans MS', 'Helvetica'</code></pre>
+      <pre><code id="snippet-1">textFont('Courier New');     // Terminal classique
+textFont('Consolas');         // Moderne et lisible
+textFont('Monaco');           // Style Mac
+textFont('Lucida Console');   // Arrondie
+textFont('Monospace');        // Générique</code></pre>
     </div>
 
-    <h3>Faire pulser le texte (respiration)</h3>
-    <p class="snippet-description">Colle dans draw(), avant text(poemeActuel...)</p>
+    <h3>Changer la couleur de la police de caractères</h3>
+    <p class="snippet-description">Dans la fonction afficherPoeme(), remplace fill(0, 255, 100) par la couleur RGB que tu veux. Tu peux utiliser un des exemples ci-dessous ou ta propre couleur</p>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this, 'snippet-2')">Copier</button>
-      <pre><code id="snippet-2">let taillePulsante = 28 + sin(frameCount * 0.02) * 5;
-textSize(taillePulsante);</code></pre>
+      <pre><code id="snippet-2">// Vert classique (par défaut)
+fill(0, 255, 100);
+
+// Orange ambre style ancien terminal
+fill(255, 180, 0);
+
+// Blanc style DOS
+fill(220, 220, 220);
+
+// Bleu cyan
+fill(0, 255, 255);</code></pre>
     </div>
 
-    <h3>Texte qui change de couleur en continu</h3>
-    <p class="snippet-description">Remplace fill(couleurTexte) dans draw()</p>
+    <h3>Changer la couleur du dégradé de fond</h3>
+    <p class="snippet-description">Dans dessinerGradient(), trouve ces lignes et remplace une ou les trois couleurs par celles qui te plaisent</p>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this, 'snippet-3')">Copier</button>
-      <pre><code id="snippet-3">let r = 200 + sin(frameCount * 0.05) * 55;
-let g = 200 + cos(frameCount * 0.07) * 55;
-let b = 220 + sin(frameCount * 0.09) * 35;
-fill(r, g, b);</code></pre>
+      <pre><code id="snippet-3">    let c1 = color(255, 0, 149); // Rose
+    let c2 = color(189, 189, 189); // Gris
+    let c3 = color(5, 207, 2); // Vert</code></pre>
     </div>
 
-    <h3>Texte qui suit la souris</h3>
-    <p class="snippet-description">Remplace translate(width/2, height/2) dans draw()</p>
+    <h3>Bouger la machine avec un cliquer-bouger</h3>
+    <p class="snippet-description">Ajoute ces lignes à la fin du programme juste avant la ligne function windowResized() {</p>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this, 'snippet-4')">Copier</button>
-      <pre><code id="snippet-4">translate(mouseX, mouseY);</code></pre>
-    </div>
-
-    <h3>Ajouter des étoiles en arrière-plan</h3>
-    <p class="snippet-description">Colle dans draw(), après background(...)</p>
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this, 'snippet-5')">Copier</button>
-      <pre><code id="snippet-5">for (let i = 0; i < 50; i++) {
-  fill(255, 200);
-  noStroke();
-  let x = (i * 137.5 + frameCount) % width;
-  let y = (i * 73 + frameCount * 0.5) % height;
-  circle(x, y, 2);
+      <pre><code id="snippet-4">function mouseDragged() {
+  positionMachineX = mouseX;
+  positionMachineY = mouseY;
 }</code></pre>
     </div>
 
-    <h3>Couleurs fixes (au lieu d'aléatoires)</h3>
-    <p class="snippet-description">Remplace les lignes couleurFond et couleurTexte dans genererPoeme()</p>
+    <h3>Arrière plan de nuit étoilée</h3>
+    <p class="snippet-description">Colle juste après function draw() {</p>
     <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this, 'snippet-7')">Copier</button>
-      <pre><code id="snippet-7">
-// Ambiance rose/mauve
-couleurFond = color(255, 200, 220);
-couleurTexte = color(80, 40, 100);
-</code></pre>
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-5')">Copier</button>
+      <pre><code id="snippet-5">  background(0); //couleur de fond noire
+  for (let i = 0; i < 200; i++) { //200 correspond au nombre d'étoiles
+  let x = (i * 137.508 * width / 800) % width;
+  let y = (i * 73.2146 * height / 600) % height;
+  let scintille = sin(frameCount * 0.05 + i) * 0.5 + 0.5; //changer le 0.05 en 0.1 pour un scintillement plus rapide
+  fill(255, 150 + scintille * 100);
+  noStroke();
+  circle(x, y, 1 + scintille); //1 correspond à la taille des étoiles
+}</code></pre>
     </div>
 
     <h3>Ajouter une image de fond</h3>
     <p class="snippet-description">Plusieurs étapes (lis les commentaires !)</p>
     <div class="code-block">
       <button class="copy-btn" onclick="copyCode(this, 'snippet-10')">Copier</button>
-      <pre><code id="snippet-10">// 1. Ajoute cette variable tout en haut avec les autres let
+      <pre><code id="snippet-10">
+// 1. Ajoute cette variable EN HAUT avec les autres let
 let monImage;
 
-// 2. Dans setup(), avant genererPoeme()
+// 2. Dans setup(), APRÈS dessinerGradient(), ajoute :
 monImage = loadImage('URL_DE_TON_IMAGE');
+// Exemple : monImage = loadImage('https://example.com/mon-image.jpg');
 
-// 3. Dans draw(), REMPLACE background(couleurFond) par :
+// 3. Dans draw(), au tout DÉBUT (avant dessinerMachine), ajoute :
 image(monImage, 0, 0, width, height);
-tint(255, 150);  // Rend l'image un peu transparente</code></pre>
-    </div>
+</div>
 
-    <h3>Texte qui bouge en cercle</h3>
-    <p class="snippet-description">Remplace translate(width/2, height/2) dans draw()</p>
-    <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this, 'snippet-11')">Copier</button>
-      <pre><code id="snippet-11">let posX = width/2 + sin(frameCount * 0.02) * 200;
-let posY = height/2 + cos(frameCount * 0.02) * 200;
-translate(posX, posY);</code></pre>
-    </div>
 
-    <h3>Taille fixe au lieu de plein écran</h3>
-    <p class="snippet-description">Remplace createCanvas(windowWidth, windowHeight) dans setup()</p>
+    <h3>Outil pour dessiner sur le fond avec la souris</h3>
+    <p class="snippet-description">Colle dans draw après background(couleurFond);</p>
     <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this, 'snippet-12')">Copier</button>
-      <pre><code id="snippet-12">createCanvas(800, 600);  // Ou n'importe quelle taille</code></pre>
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-13')">Copier</button>
+      <pre><code id="snippet-13">circle(mouseX, mouseY, 20);</code></pre>
     </div>
 
     <div class="footer">
-      <p>Préparé avec 💖 par Marion Schneider pour l'atelier de programmation créative</p>
+      <p>Préparé avec 💖 par <a href="https://schneidermarion.net" target="_blank">Marion Schneider</a> pour l'atelier de programmation créative avec Ada X</p>
       <p>Licence : <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></p>
     </div>
   </div>
