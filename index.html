@@ -421,6 +421,36 @@ monImage = loadImage('URL_DE_TON_IMAGE');
 image(monImage, 0, 0, width, height);
 </div>
 
+    <h3>Ajouter une antenne qui clignote</h3>
+    <p class="snippet-description">Colle ce bloc de code dans dessinerMachine(), à la fin juste AVANT pop();</p>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this, 'snippet-10')">Copier</button>
+      <pre><code id="snippet-10">
+// ANTENNE QUI CLIGNOTE
+stroke(120, 120, 120);
+strokeWeight(4);
+line(0, -250, 0, -320);
+
+// Calculer l'intensité lumineuse (0 à 1)
+let intensite = (sin(frameCount * 0.1) + 1) / 2;
+
+noStroke();
+// Halos qui pulsent
+fill(255, 100, 100, 50 * intensite);
+circle(0, -320, 40);
+
+fill(255, 80, 80, 100 * intensite);
+circle(0, -320, 28);
+
+// Boule qui change d'intensité
+fill(255, 50 + 150 * intensite, 50 + 150 * intensite);
+circle(0, -320, 20);
+
+// Point brillant
+fill(255, 200, 200, 200 * intensite);
+circle(-3, -323, 8);
+</div>
+
 
     <h3>Outil pour dessiner sur le fond avec la souris</h3>
     <p class="snippet-description">Colle dans draw après background(couleurFond);</p>
